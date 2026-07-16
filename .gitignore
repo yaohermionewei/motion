@@ -1,0 +1,28 @@
+node_modules/
+dist/
+.DS_Store
+
+# Local research workspaces and evidence are intentionally not published.
+AGENTS.md
+docs/
+reference-sites/
+粗野主义网站/
+scripts/dev-gateway.mjs
+src/reference-sites.css
+
+# Superseded or source-provided local image files.
+public/images/air-cloud.png
+
+# Unregistered local experiments.
+src/components/ColorWipe.jsx
+src/components/CountUp.jsx
+src/components/DirectionalSwap.jsx
+src/components/HoverFilmstrip.jsx
+src/components/HoverZoom.jsx
+src/components/LineRise.jsx
+src/components/MagneticArrow.jsx
+src/components/PixelSwap.jsx
+src/components/ProjectTrail.jsx
+src/components/SplitCurtain.jsx
+src/components/ToneChapters.jsx
+src/components/WordFocus.jsx
