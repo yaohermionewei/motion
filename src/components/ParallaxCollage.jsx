@@ -24,13 +24,13 @@ const styles = `
 `;
 
 const projects = [
-  { title: "North Loop", year: "2026", image: "/images/retro-media-orbit.png", alt: "Storage media orbiting in a grainy star field", left: "58%", top: "5%", width: "28%", ratio: "4 / 5", drift: -150, rotate: "2deg" },
-  { title: "Working Table", year: "2026", image: "/images/retro-cloud-stairway.png", alt: "A stairway crossing pink clouds", left: "7%", top: "23%", width: "24%", ratio: "4 / 3", drift: 94, rotate: "-3deg" },
-  { title: "Open Form", year: "2025", image: "/images/retro-cosmic-paths.png", alt: "Interlaced paths floating through space", left: "69%", top: "34%", width: "20%", ratio: "3 / 4", drift: -76, rotate: "3deg" },
-  { title: "Common Ground", year: "2025", image: "/images/retro-oval-horizon.png", alt: "A figure looking through an oval horizon", left: "36%", top: "44%", width: "22%", ratio: "4 / 5", drift: 132, rotate: "-1deg" },
-  { title: "Field Study", year: "2025", image: "/images/retro-media-orbit.png", alt: "Retro storage media among planets", left: "4%", top: "59%", width: "31%", ratio: "16 / 10", drift: -104, rotate: "2deg" },
-  { title: "Process Notes", year: "2024", image: "/images/retro-cloud-stairway.png", alt: "A lone figure on a cloud stairway", left: "66%", top: "68%", width: "27%", ratio: "4 / 3", drift: 74, rotate: "-2deg" },
-  { title: "Heavy Light", year: "2024", image: "/images/retro-oval-horizon.png", alt: "A grainy oval portal above a dark landscape", left: "24%", top: "82%", width: "38%", ratio: "16 / 10", drift: 118, rotate: "1deg" },
+  { title: "North Loop", year: "2026", image: "/images/retro-media-orbit.webp", alt: "Storage media orbiting in a grainy star field", left: "58%", top: "5%", width: "28%", ratio: "4 / 5", drift: -150, rotate: "2deg" },
+  { title: "Working Table", year: "2026", image: "/images/retro-cloud-stairway.webp", alt: "A stairway crossing pink clouds", left: "7%", top: "23%", width: "24%", ratio: "4 / 3", drift: 94, rotate: "-3deg" },
+  { title: "Open Form", year: "2025", image: "/images/retro-cosmic-paths.webp", alt: "Interlaced paths floating through space", left: "69%", top: "34%", width: "20%", ratio: "3 / 4", drift: -76, rotate: "3deg" },
+  { title: "Common Ground", year: "2025", image: "/images/retro-oval-horizon.webp", alt: "A figure looking through an oval horizon", left: "36%", top: "44%", width: "22%", ratio: "4 / 5", drift: 132, rotate: "-1deg" },
+  { title: "Field Study", year: "2025", image: "/images/retro-media-orbit.webp", alt: "Retro storage media among planets", left: "4%", top: "59%", width: "31%", ratio: "16 / 10", drift: -104, rotate: "2deg" },
+  { title: "Process Notes", year: "2024", image: "/images/retro-cloud-stairway.webp", alt: "A lone figure on a cloud stairway", left: "66%", top: "68%", width: "27%", ratio: "4 / 3", drift: 74, rotate: "-2deg" },
+  { title: "Heavy Light", year: "2024", image: "/images/retro-oval-horizon.webp", alt: "A grainy oval portal above a dark landscape", left: "24%", top: "82%", width: "38%", ratio: "16 / 10", drift: 118, rotate: "1deg" },
 ];
 
 export default function ParallaxCollage({ items = projects }) {

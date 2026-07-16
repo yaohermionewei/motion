@@ -71,7 +71,7 @@ function drawCover(context, source, width, height) {
 }
 
 export default function DitheredMediaReveal({
-  image = "/images/retro-cosmic-paths.png",
+  image = "/images/retro-cosmic-paths.webp",
   alt = "Artist working in a bright studio",
   columns = 160,
   rows = 100,

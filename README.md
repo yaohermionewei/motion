@@ -83,9 +83,9 @@ npm run preview
 
 ## 演示资源
 
-`public/images/` 中的十张复古未来主义 PNG 用于展示图片遮罩、悬停、画廊、WebGL 和滚动转场。复制组件后可以直接替换成自己的图片。
+`public/images/` 中的十张复古未来主义图片提供 PNG 原图和 WebP 网页版本，用于展示图片遮罩、悬停、画廊、WebGL 和滚动转场。网页默认加载体积更小的 WebP；复制组件后可以直接替换成自己的图片。
 
-Anchored Cloud Field 不读取外部云纹理；云层纹理由组件在浏览器中生成，因此复制组件代码后不需要额外下载素材。
+Anchored Cloud Field 使用 `air-cloud.png` 透明纹理；组件预览页提供图片下载入口，复制代码时需要一并替换或保留该纹理路径。
 
 ## 许可
 

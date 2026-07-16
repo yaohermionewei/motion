@@ -24,7 +24,7 @@ const styles = `
 `;
 
 export default function HeroShrinkScene({
-  image = "/images/retro-cosmic-paths.png",
+  image = "/images/retro-cosmic-paths.webp",
 }) {
   const [progress, setProgress] = useState(0);
 

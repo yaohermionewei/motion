@@ -10,9 +10,6 @@ reference-sites/
 scripts/dev-gateway.mjs
 src/reference-sites.css
 
-# Superseded or source-provided local image files.
-public/images/air-cloud.png
-
 # Unregistered local experiments.
 src/components/ColorWipe.jsx
 src/components/CountUp.jsx

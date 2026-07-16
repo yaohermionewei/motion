@@ -31,8 +31,8 @@ const styles = `
 `;
 
 export default function DualPanelConverge({
-  leftImage = "/images/retro-media-orbit.png",
-  rightImage = "/images/retro-cosmic-paths.png",
+  leftImage = "/images/retro-media-orbit.webp",
+  rightImage = "/images/retro-cosmic-paths.webp",
 }) {
   const [progress, setProgress] = useState(0);
 

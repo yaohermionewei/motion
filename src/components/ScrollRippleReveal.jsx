@@ -125,7 +125,7 @@ const defaultItems = [
   {
     title: "Glass House",
     year: "2026",
-    image: "/images/retro-oval-horizon.png",
+    image: "/images/retro-oval-horizon.webp",
     alt: "Glass towers beneath a cloudy sky",
     layout: "wide",
     ratio: "16 / 9",
@@ -133,7 +133,7 @@ const defaultItems = [
   {
     title: "North Facade",
     year: "2026",
-    image: "/images/retro-media-orbit.png",
+    image: "/images/retro-media-orbit.webp",
     alt: "Blue modern architecture against a clear sky",
     layout: "half",
     ratio: "4 / 5",
@@ -141,7 +141,7 @@ const defaultItems = [
   {
     title: "Working Table",
     year: "2025",
-    image: "/images/retro-cloud-stairway.png",
+    image: "/images/retro-cloud-stairway.webp",
     alt: "Design materials arranged on a work table",
     layout: "half",
     ratio: "4 / 5",
@@ -149,7 +149,7 @@ const defaultItems = [
   {
     title: "Open Studio",
     year: "2024",
-    image: "/images/retro-cosmic-paths.png",
+    image: "/images/retro-cosmic-paths.webp",
     alt: "Artist working in a bright studio",
     layout: "wide",
     ratio: "16 / 10",

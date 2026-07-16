@@ -3,6 +3,7 @@ import {
   Check,
   Code2,
   Copy,
+  Download,
   Eye,
   Menu,
   RotateCcw,
@@ -166,6 +167,17 @@ export default function App() {
                 <button className="icon-button" onClick={() => setReplayKey((value) => value + 1)} aria-label="重新播放" title="重新播放">
                   <RotateCcw size={17} />
                 </button>
+                {selected.id === "anchored-cloud-field" && (
+                  <a
+                    className="command-button"
+                    href="/images/air-cloud.png"
+                    download="air-cloud.png"
+                    aria-label="下载云朵 PNG 图片"
+                  >
+                    <Download size={16} />
+                    下载图片
+                  </a>
+                )}
                 <button className="command-button" onClick={copySource}>
                   {copied ? <Check size={16} /> : <Copy size={16} />}
                   {copied ? "已复制" : "复制代码"}

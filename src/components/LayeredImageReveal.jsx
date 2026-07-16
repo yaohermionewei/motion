@@ -36,8 +36,8 @@ const styles = `
 `;
 
 export default function LayeredImageReveal({
-  baseImage = "/images/retro-oval-horizon.png",
-  revealImage = "/images/retro-media-orbit.png",
+  baseImage = "/images/retro-oval-horizon.webp",
+  revealImage = "/images/retro-media-orbit.webp",
 }) {
   const [active, setActive] = useState(false);
 

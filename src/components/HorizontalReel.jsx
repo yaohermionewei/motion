@@ -16,10 +16,10 @@ const styles = `
 `;
 
 const defaultProjects = [
-  ["North Loop", "2026", "/images/retro-media-orbit.png"],
-  ["Working Notes", "2025", "/images/retro-cloud-stairway.png"],
-  ["Material Study", "2025", "/images/retro-cosmic-paths.png"],
-  ["Vertical City", "2024", "/images/retro-oval-horizon.png"],
+  ["North Loop", "2026", "/images/retro-media-orbit.webp"],
+  ["Working Notes", "2025", "/images/retro-cloud-stairway.webp"],
+  ["Material Study", "2025", "/images/retro-cosmic-paths.webp"],
+  ["Vertical City", "2024", "/images/retro-oval-horizon.webp"],
 ];
 
 export default function HorizontalReel({ projects = defaultProjects }) {

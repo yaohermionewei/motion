@@ -34,20 +34,24 @@ const requiredFiles = [
   ...componentFiles.map((name) => `src/components/${name}`),
 ];
 const imageFiles = [
-  "retro-media-orbit.png",
-  "retro-disc-signal.png",
-  "retro-cosmic-paths.png",
-  "retro-oval-horizon.png",
-  "retro-yellow-gateway.png",
-  "retro-cloud-stairway.png",
-  "retro-window-reflection.png",
-  "retro-stellar-ring.png",
-  "retro-luminous-black-hole.png",
-  "retro-planetary-voyage.png",
+  "retro-media-orbit",
+  "retro-disc-signal",
+  "retro-cosmic-paths",
+  "retro-oval-horizon",
+  "retro-yellow-gateway",
+  "retro-cloud-stairway",
+  "retro-window-reflection",
+  "retro-stellar-ring",
+  "retro-luminous-black-hole",
+  "retro-planetary-voyage",
 ];
 const requiredAssets = [
   "public/motion-index-mark.svg",
-  ...imageFiles.map((name) => `public/images/${name}`),
+  "public/images/air-cloud.png",
+  ...imageFiles.flatMap((name) => [
+    `public/images/${name}.png`,
+    `public/images/${name}.webp`,
+  ]),
 ];
 const componentIds = [
   "oval-title-reveal",
@@ -74,7 +78,7 @@ const componentIds = [
   "scroll-direction-nav",
 ];
 const categoryIds = ["type", "buttons", "covers", "galleries", "scenes-3d", "transitions", "paths", "navigation"];
-const localOnlyMarkers = ["reference-sites/", "air-cloud.png", "直接移植"];
+const localOnlyMarkers = ["reference-sites/", "直接移植"];
 
 const sources = await Promise.all(
   requiredFiles.map(async (path) => ({ path, source: await readFile(new URL(path, root), "utf8") })),

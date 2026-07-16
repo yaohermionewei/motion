@@ -50,10 +50,10 @@ const styles = `
 `;
 
 const menuItems = [
-  { title: "Work", image: "/images/retro-media-orbit.png" },
-  { title: "Studio", image: "/images/retro-cosmic-paths.png" },
-  { title: "Journal", image: "/images/retro-cloud-stairway.png" },
-  { title: "Contact", image: "/images/retro-oval-horizon.png" },
+  { title: "Work", image: "/images/retro-media-orbit.webp" },
+  { title: "Studio", image: "/images/retro-cosmic-paths.webp" },
+  { title: "Journal", image: "/images/retro-cloud-stairway.webp" },
+  { title: "Contact", image: "/images/retro-oval-horizon.webp" },
 ];
 
 export default function StaggeredMenu({ items = menuItems, variant = "compact" }) {

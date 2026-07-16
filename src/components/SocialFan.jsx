@@ -38,13 +38,13 @@ const styles = `
 `;
 
 const images = [
-  "/images/retro-oval-horizon.png",
-  "/images/retro-cloud-stairway.png",
-  "/images/retro-cosmic-paths.png",
-  "/images/retro-media-orbit.png",
-  "/images/retro-cosmic-paths.png",
-  "/images/retro-cloud-stairway.png",
-  "/images/retro-oval-horizon.png",
+  "/images/retro-oval-horizon.webp",
+  "/images/retro-cloud-stairway.webp",
+  "/images/retro-cosmic-paths.webp",
+  "/images/retro-media-orbit.webp",
+  "/images/retro-cosmic-paths.webp",
+  "/images/retro-cloud-stairway.webp",
+  "/images/retro-oval-horizon.webp",
 ];
 
 const base = [

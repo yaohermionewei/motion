@@ -27,8 +27,8 @@ const styles = `
 `;
 
 export default function OvalSectionReveal({
-  image = "/images/retro-cloud-stairway.png",
-  detailImage = "/images/retro-media-orbit.png",
+  image = "/images/retro-cloud-stairway.webp",
+  detailImage = "/images/retro-media-orbit.webp",
 }) {
   const [progress, setProgress] = useState(0);
 

@@ -67,7 +67,7 @@ export default function HoverDisclosureCard({
   eyebrow = "Field study / 04",
   title = "Shared Ground",
   description = "A compact disclosure pattern keeps imagery prominent until a visitor asks for the context behind it.",
-  image = "/images/retro-media-orbit.png",
+  image = "/images/retro-media-orbit.webp",
   actionLabel = "View details",
 }) {
   const [active, setActive] = useState(false);

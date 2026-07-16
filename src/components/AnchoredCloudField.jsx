@@ -10,17 +10,9 @@ const styles = `
   overflow: hidden;
   isolation: isolate;
   background:
-    radial-gradient(circle at 50% 14%, rgba(255,255,255,.22), transparent 26%),
-    linear-gradient(180deg, var(--cloud-sky-top), var(--cloud-sky-middle) 46%, var(--cloud-sky-bottom));
-}
-.anchored-cloud-field::after {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(7,43,104,.18), transparent 18%, transparent 82%, rgba(7,43,104,.16)),
-    radial-gradient(ellipse at 50% 112%, rgba(255,255,255,.28), transparent 42%);
-  content: "";
+    linear-gradient(90deg, rgba(7, 43, 104, 0.2), transparent 18%, transparent 82%, rgba(7, 43, 104, 0.19)),
+    radial-gradient(ellipse at 50% 10%, rgba(255, 255, 255, 0.12), transparent 32%),
+    linear-gradient(180deg, var(--cloud-sky-top) 0%, var(--cloud-sky-middle) 44%, var(--cloud-sky-bottom) 100%);
 }
 .anchored-cloud-field__canvas {
   position: absolute;
@@ -29,122 +21,86 @@ const styles = `
   width: 100%;
   height: 100%;
 }
-.anchored-cloud-field.is-fallback::before {
-  position: absolute;
-  inset: -12%;
-  background:
-    radial-gradient(ellipse at 0% 25%, rgba(255,255,255,.88) 0 8%, transparent 22%),
-    radial-gradient(ellipse at 100% 40%, rgba(239,249,255,.9) 0 10%, transparent 24%),
-    radial-gradient(ellipse at 18% 104%, rgba(222,242,255,.82) 0 12%, transparent 28%),
-    radial-gradient(ellipse at 82% -4%, rgba(255,255,255,.76) 0 9%, transparent 24%);
-  content: "";
-}
 `;
 
-function createSeededRandom(seed) {
-  let state = seed >>> 0;
-  return () => {
-    state += 0x6d2b79f5;
-    let value = state;
-    value = Math.imul(value ^ (value >>> 15), value | 1);
-    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
-    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
-  };
-}
+const lerp = (start, end, amount) => start + (end - start) * amount;
 
-function createProceduralCloudTexture() {
-  const canvas = document.createElement("canvas");
-  canvas.width = 256;
-  canvas.height = 160;
-  const context = canvas.getContext("2d");
-  const random = createSeededRandom(4172);
+function createCloudMaterial(texture) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uCloud: { value: texture },
+      uDepth: { value: new THREE.Vector2(-100, 50) },
+      uPlaneSize: { value: 17 },
+      uSkyColor: { value: new THREE.Color("#00b3ff") },
+      uSkyColorBottom: { value: new THREE.Color("#c7e9ff") },
+      uOpacity: { value: 1 },
+    },
+    transparent: true,
+    depthWrite: false,
+    vertexShader: `
+      uniform vec2 uDepth;
+      uniform float uPlaneSize;
+      varying vec2 vUv;
+      varying float vDepth;
+      varying vec2 vFlatUv;
+      varying vec2 vViewportUV;
 
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  const puffs = [
-    [42, 96, 48],
-    [80, 72, 58],
-    [124, 82, 68],
-    [170, 66, 56],
-    [210, 94, 46],
-    [112, 116, 58],
-    [162, 112, 52],
-  ];
+      void main() {
+        vUv = uv;
+        vec4 worldPosition = modelMatrix * instanceMatrix * vec4(position * uPlaneSize, 1.0);
+        vec4 viewPosition = viewMatrix * worldPosition;
+        gl_Position = projectionMatrix * viewPosition;
+        vec3 ndc = gl_Position.xyz / gl_Position.w;
+        vViewportUV = ndc.xy * 0.5 + 0.5;
+        float cosR = instanceMatrix[0][0];
+        float sinR = instanceMatrix[1][0];
+        vec2 centeredUv = uv - 0.5;
+        vFlatUv = vec2(
+          centeredUv.x * cosR + centeredUv.y * sinR,
+          -centeredUv.x * sinR + centeredUv.y * cosR
+        ) + 0.5;
+        float depth = (worldPosition.z - uDepth.x) / (uDepth.y - uDepth.x);
+        vDepth = clamp(depth, 0.0, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D uCloud;
+      uniform vec3 uSkyColor;
+      uniform vec3 uSkyColorBottom;
+      uniform float uOpacity;
+      varying vec2 vUv;
+      varying float vDepth;
+      varying vec2 vFlatUv;
+      varying vec2 vViewportUV;
 
-  puffs.forEach(([x, y, radius], index) => {
-    const gradient = context.createRadialGradient(
-      x - radius * 0.18,
-      y - radius * 0.24,
-      radius * 0.05,
-      x,
-      y,
-      radius,
-    );
-    const brightness = 246 - (index % 3) * 4;
-    gradient.addColorStop(0, `rgba(255,255,255,${0.96 - random() * 0.05})`);
-    gradient.addColorStop(0.52, `rgba(${brightness},250,255,.88)`);
-    gradient.addColorStop(0.78, "rgba(210,235,252,.48)");
-    gradient.addColorStop(1, "rgba(190,225,247,0)");
-    context.fillStyle = gradient;
-    context.beginPath();
-    context.arc(x, y, radius, 0, Math.PI * 2);
-    context.fill();
-  });
-
-  context.globalCompositeOperation = "source-in";
-  const shade = context.createLinearGradient(0, 24, 0, 150);
-  shade.addColorStop(0, "#ffffff");
-  shade.addColorStop(0.58, "#f3fbff");
-  shade.addColorStop(1, "#b8dff7");
-  context.fillStyle = shade;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.globalCompositeOperation = "source-over";
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = THREE.ClampToEdgeWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-  texture.needsUpdate = true;
-  return texture;
-}
-
-function createCloudLayout(count, aspect) {
-  const random = createSeededRandom(9301);
-  const mobileScale = Math.min(1, 0.68 + aspect * 0.22);
-
-  return Array.from({ length: count }, (_, index) => {
-    const edge = index % 4;
-    const size = (0.3 + random() * 0.34) * mobileScale;
-    const width = size * (1.75 + random() * 0.65);
-    const height = size * (0.78 + random() * 0.22);
-    let x;
-    let y;
-
-    if (edge === 0 || edge === 1) {
-      x = (edge === 0 ? -1 : 1) * (aspect + width * (0.1 + random() * 0.22));
-      y = -0.92 + random() * 1.84;
-    } else {
-      x = -aspect + random() * aspect * 2;
-      y = (edge === 2 ? 1 : -1) * (1 + height * (0.04 + random() * 0.18));
-    }
-
-    return {
-      x,
-      y,
-      z: random() * 0.6,
-      width,
-      height,
-      rotation: (random() - 0.5) * 0.72,
-      spin: (0.025 + random() * 0.045) * (random() > 0.5 ? 1 : -1),
-      phase: random() * Math.PI * 2,
-      drift: 0.018 + random() * 0.026,
-      pulse: 0.018 + random() * 0.025,
-    };
+      void main() {
+        vec4 tex = texture2D(uCloud, vUv);
+        float inverseFade = 1.0 - pow(vDepth, 10.0);
+        tex.a *= 1.0 - pow(1.0 - vDepth, 1.5);
+        tex.a *= inverseFade;
+        vec3 averageSky = (uSkyColor + uSkyColorBottom) / 2.0;
+        float skyBrightness = dot(averageSky, vec3(0.2126, 0.7152, 0.0722));
+        vec3 cloudColor = mix(
+          averageSky,
+          tex.rgb * clamp(skyBrightness * 3.0, 0.0, 1.0),
+          clamp(skyBrightness * 2.0, 0.0, 1.0)
+        );
+        vec3 skyColor = mix(uSkyColor, uSkyColorBottom, 1.0 - vViewportUV.y);
+        vec3 greyGradient = mix(cloudColor * 0.5, cloudColor, smoothstep(0.2, 0.6, vFlatUv.y));
+        vec3 color = mix(
+          greyGradient,
+          mix(skyColor, cloudColor, 0.1),
+          1.0 - smoothstep(0.1, 0.6, vFlatUv.y)
+        );
+        gl_FragColor = vec4(color, clamp(tex.a * uOpacity, 0.0, 1.0));
+      }
+    `,
   });
 }
 
 export default function AnchoredCloudField({
   speed = 1,
-  density = 42,
+  textureUrl = "/images/air-cloud.png",
   skyTop = "#148cf6",
   skyMiddle = "#34a8fb",
   skyBottom = "#78c8f6",
@@ -159,97 +115,153 @@ export default function AnchoredCloudField({
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
-    camera.position.z = 4;
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 240);
+    camera.position.set(0, 0, 50);
 
-    let renderer;
-    try {
-      renderer = new THREE.WebGLRenderer({
-        canvas,
-        alpha: true,
-        antialias: true,
-        powerPreference: "high-performance",
-        stencil: false,
-      });
-    } catch {
-      root.classList.add("is-fallback");
-      root.dataset.motionState = "fallback";
-      return () => root.classList.remove("is-fallback");
-    }
-
-    renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-    const texture = createProceduralCloudTexture();
-    const geometry = new THREE.PlaneGeometry(1, 1);
-    const material = new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-      opacity: 0.92,
-      depthTest: false,
-      depthWrite: false,
-      toneMapped: false,
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: "high-performance",
+      stencil: false,
     });
-    const maxClouds = Math.max(12, Math.min(Math.round(density), 80));
-    const mesh = new THREE.InstancedMesh(geometry, material, maxClouds);
-    const dummy = new THREE.Object3D();
-    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    mesh.frustumCulled = false;
-    scene.add(mesh);
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.4));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1;
 
-    let clouds = [];
-    let frameId = 0;
-    let visible = true;
     let disposed = false;
+    let frameId = 0;
+    let previousTime = 0;
+    let visible = true;
+    const cloudTexture = new THREE.TextureLoader().load(textureUrl);
+    const cloudGeometry = new THREE.PlaneGeometry(1, 1);
+    const cloudMaterial = createCloudMaterial(cloudTexture);
+    const cloudInstances = [];
+    const cloudMesh = new THREE.InstancedMesh(cloudGeometry, cloudMaterial, 400);
+    const cloudDummy = new THREE.Object3D();
+    cloudMesh.frustumCulled = false;
+    cloudMesh.renderOrder = 3;
+    scene.add(cloudMesh);
 
-    const writeMatrices = (elapsed = 0) => {
-      clouds.forEach((cloud, index) => {
-        const driftX = Math.sin(elapsed * 0.34 + cloud.phase) * cloud.drift;
-        const driftY = Math.cos(elapsed * 0.27 + cloud.phase) * cloud.drift * 0.55;
-        const pulse = 1 + Math.sin(elapsed * 0.46 + cloud.phase) * cloud.pulse;
-        dummy.position.set(cloud.x + driftX, cloud.y + driftY, cloud.z);
-        dummy.scale.set(cloud.width * pulse, cloud.height * pulse, 1);
-        dummy.rotation.set(0, 0, cloud.rotation + elapsed * cloud.spin * speed);
-        dummy.updateMatrix();
-        mesh.setMatrixAt(index, dummy.matrix);
+    const initialCloudSeed = 12358;
+    let cloudSeed = initialCloudSeed;
+    let cloudPlaneSize = 17;
+    const cloudRandom = () => {
+      const value = Math.sin(cloudSeed++) * 10000;
+      return value - Math.floor(value);
+    };
+
+    const placeCloudCluster = (baseX, baseY, baseZ, clusterIndex, scaleFactor) => {
+      const radius = cloudPlaneSize * scaleFactor * 0.5;
+      for (let itemIndex = 0; itemIndex < 20; itemIndex += 1) {
+        const alternating = itemIndex % 2 === 0 ? 1 : -1;
+        const offsetX =
+          (1 - Math.pow(1 - itemIndex / 20, 3)) *
+          radius *
+          Math.cos(Math.PI / 2 + ((Math.PI * 2) / 20) * alternating * itemIndex);
+        let scale =
+          lerp(0.5, 1.25, 1 - Math.pow(1 - Math.abs(offsetX) / Math.max(radius, 0.001), 2)) +
+          (cloudRandom() - 0.5) * 0.5;
+        scale *= 0.5;
+        const rotation = cloudRandom() * Math.PI * 2;
+        const direction = cloudRandom() < 0.5 ? 1 : -1;
+        const cloudSpeed = 0.5 + cloudRandom() * 0.5;
+        cloudInstances.push({
+          x: baseX + offsetX,
+          y: baseY + (scale * cloudPlaneSize) / 2 - (cloudRandom() - 0.5),
+          z: baseZ + (cloudRandom() - 0.5),
+          scale,
+          rotation,
+          direction,
+          speed: cloudSpeed,
+          clusterIndex,
+        });
+      }
+    };
+
+    const writeMatrices = (delta = 0) => {
+      cloudInstances.sort((first, second) => first.z - second.z);
+      cloudInstances.forEach((cloud, index) => {
+        if (!reducedMotion) {
+          cloud.rotation += delta * cloud.speed * cloud.direction * 0.05 * speed;
+        }
+        const pulse = cloud.scale + Math.sin(cloud.rotation * 10) * 0.1;
+        cloudDummy.position.set(cloud.x, cloud.y, cloud.z);
+        cloudDummy.scale.set(pulse, pulse, pulse);
+        cloudDummy.rotation.set(0, 0, cloud.rotation);
+        cloudDummy.updateMatrix();
+        cloudMesh.setMatrixAt(index, cloudDummy.matrix);
       });
-      mesh.count = clouds.length;
-      mesh.instanceMatrix.needsUpdate = true;
+      cloudMesh.count = cloudInstances.length;
+      cloudMesh.instanceMatrix.needsUpdate = true;
+    };
+
+    const initializeClouds = (width, height) => {
+      cloudSeed = initialCloudSeed;
+      cloudInstances.length = 0;
+      const viewportWorldHeight = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const viewportWorldWidth = viewportWorldHeight * camera.aspect;
+      cloudPlaneSize = Math.max((viewportWorldWidth / 32) * 12, 17);
+      cloudMaterial.uniforms.uPlaneSize.value = cloudPlaneSize;
+
+      // Same normalized document slice as Air's 1280x720 Story scene at scrollY 7400.
+      const sourcePageHeight = height * (11229 / 720);
+      const sourceScrollY = height * (7400 / 720);
+      const documentWorldHeight =
+        (viewportWorldHeight / Math.max(height, 1)) * (sourcePageHeight - height * 1.5);
+      const rowStep = documentWorldHeight / 20;
+      const sideParity = 1;
+
+      for (let row = 0; row < 20; row += 1) {
+        const side = row % 2 === sideParity ? 1 : -1;
+        const z = row > 17 ? 0 : -((cloudRandom() - 0.5) * 100);
+        const depthScale = lerp(1, 2, -z / 100);
+        placeCloudCluster(
+          (viewportWorldWidth / 2) * side * depthScale,
+          -viewportWorldHeight - rowStep * row - (cloudRandom() - 0.5) * (rowStep / 2),
+          z,
+          row,
+          1,
+        );
+      }
+
+      cloudMesh.position.y = (viewportWorldHeight / Math.max(height, 1)) * sourceScrollY;
+      writeMatrices(0);
     };
 
     const resize = () => {
       const bounds = root.getBoundingClientRect();
       const width = Math.max(Math.round(bounds.width), 1);
       const height = Math.max(Math.round(bounds.height), 1);
-      const aspect = width / height;
-      camera.left = -aspect;
-      camera.right = aspect;
-      camera.top = 1;
-      camera.bottom = -1;
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
-      clouds = createCloudLayout(maxClouds, aspect);
-      writeMatrices(0);
+      initializeClouds(width, height);
+      renderer.render(scene, camera);
+    };
+
+    const renderFrame = (time = 0) => {
+      const delta = Math.min(Math.max((time - previousTime) * 0.001, 0), 0.05);
+      previousTime = time;
+      writeMatrices(delta);
       renderer.render(scene, camera);
     };
 
     const animate = (time) => {
       frameId = 0;
       if (disposed || !visible) return;
-      writeMatrices(time * 0.001);
-      renderer.render(scene, camera);
+      renderFrame(time);
       frameId = window.requestAnimationFrame(animate);
     };
 
     const start = () => {
       if (reducedMotion) {
-        root.dataset.motionState = "reduced";
-        writeMatrices(0);
-        renderer.render(scene, camera);
+        renderFrame(0);
         return;
       }
-      root.dataset.motionState = "running";
+      previousTime = performance.now();
       if (!frameId && visible && !disposed) frameId = window.requestAnimationFrame(animate);
     };
 
@@ -285,20 +297,19 @@ export default function AnchoredCloudField({
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
       scene.clear();
-      mesh.dispose();
-      geometry.dispose();
-      material.dispose();
-      texture.dispose();
+      cloudGeometry.dispose();
+      cloudMaterial.dispose();
+      cloudTexture.dispose();
       renderer.dispose();
     };
-  }, [density, speed]);
+  }, [speed, textureUrl]);
 
   return (
     <section
       ref={rootRef}
       className="anchored-cloud-field"
       role="img"
-      aria-label="A field of softly rolling clouds anchored around an open blue sky"
+      aria-label="Clouds anchored around a blue sky while their layers slowly roll"
       style={{
         "--cloud-sky-top": skyTop,
         "--cloud-sky-middle": skyMiddle,

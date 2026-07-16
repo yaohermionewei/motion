@@ -214,7 +214,7 @@ export const motionComponents = [
     category: "scenes-3d",
     title: "锚定翻滚云团",
     english: "Anchored Cloud Field",
-    description: "程序生成的半透明云片固定在画面边缘，内部持续缓慢旋转、漂移和呼吸，同时为中央内容保留稳定的开放区域。",
+    description: "云团停留在场景锚点，内部云片以不同方向缓慢翻滚和呼吸，适合在内容周围营造不干扰阅读的持续空间氛围。",
     complexity: "中等",
     interaction: "持续播放",
     Component: AnchoredCloudField,
