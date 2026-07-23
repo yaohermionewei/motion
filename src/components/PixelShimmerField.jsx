@@ -6,8 +6,8 @@ const styles = `
   display: grid;
   place-items: center;
   padding: clamp(16px, 2.5vw, 30px);
-  background: #f5f4ef;
-  color: #20211d;
+  background: #000;
+  color: #f5f4ef;
 }
 .pixel-shimmer__field {
   position: relative;
@@ -16,7 +16,7 @@ const styles = `
   display: grid;
   place-items: center;
   overflow: hidden;
-  border-radius: 22px;
+  border-radius: 0;
   background: var(--field-background);
   isolation: isolate;
 }
@@ -38,54 +38,18 @@ const styles = `
   padding: 54px 24px;
   text-align: center;
 }
-.pixel-shimmer__eyebrow {
-  margin: 0 0 16px;
-  color: #315f5b;
-  font: 600 10px/1 "DM Sans", sans-serif;
-  text-transform: uppercase;
-}
 .pixel-shimmer__title {
   margin: 0;
   font: 400 clamp(48px, 5.2vw, 74px)/.92 "Instrument Serif", serif;
   letter-spacing: 0;
   text-wrap: balance;
 }
-.pixel-shimmer__description {
-  max-width: 590px;
-  margin: 24px 0 0;
-  color: #2d3733;
-  font: 500 18px/1.38 "DM Sans", sans-serif;
-  text-wrap: balance;
-}
-.pixel-shimmer__action {
-  min-height: 50px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 32px;
-  padding: 0 26px;
-  border: 1px solid #20211d;
-  border-radius: 999px;
-  background: #20211d;
-  color: #f7f7f2;
-  font: 600 13px/1 "DM Sans", sans-serif;
-  cursor: pointer;
-  transition: background 180ms ease, color 180ms ease;
-}
-.pixel-shimmer__action:hover { background: #f5f4ef; color: #20211d; }
-.pixel-shimmer__action:focus-visible { outline: 3px solid #20211d; outline-offset: 3px; }
 
 @media (max-width: 700px) {
   .pixel-shimmer { padding: 12px; }
-  .pixel-shimmer__field { min-height: calc(100% - 2px); border-radius: 16px; }
+  .pixel-shimmer__field { min-height: calc(100% - 2px); }
   .pixel-shimmer__content { width: min(344px, calc(100% - 28px)); padding: 72px 10px; }
   .pixel-shimmer__title { font-size: 44px; line-height: .94; }
-  .pixel-shimmer__description { max-width: 302px; margin-top: 20px; font-size: 15px; line-height: 1.45; }
-  .pixel-shimmer__action { margin-top: 28px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pixel-shimmer__action { transition: none; }
 }
 `;
 
@@ -136,16 +100,12 @@ function flowField(x, y, time) {
 }
 
 export default function PixelShimmerField({
-  eyebrow = "",
   title = "Your perspective has value.",
-  description = "Share what you notice, compare what works, and help better ideas move forward.",
-  actionLabel = "Join the study",
   density = 1,
   speed = 1,
   pixelSize = 7,
-  backgroundColor = "#c8e7e4",
-  dotColor = "#2e706b",
-  onAction,
+  backgroundColor = "#000000",
+  dotColor = "#8a9299",
 }) {
   const canvasRef = useRef(null);
 
@@ -252,10 +212,7 @@ export default function PixelShimmerField({
       <div className="pixel-shimmer__field" style={{ "--field-background": backgroundColor }}>
         <canvas className="pixel-shimmer__canvas" ref={canvasRef} aria-hidden="true" />
         <div className="pixel-shimmer__content">
-          {eyebrow ? <p className="pixel-shimmer__eyebrow">{eyebrow}</p> : null}
           <h2 className="pixel-shimmer__title">{title}</h2>
-          <p className="pixel-shimmer__description">{description}</p>
-          <button className="pixel-shimmer__action" type="button" onClick={onAction}>{actionLabel}</button>
         </div>
       </div>
     </section>

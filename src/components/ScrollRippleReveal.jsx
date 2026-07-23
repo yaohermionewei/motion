@@ -10,10 +10,10 @@ const styles = `
   overscroll-behavior: contain;
   scrollbar-width: thin;
   isolation: isolate;
-  background: #e8efec;
-  color: #1d211f;
+  background: #000;
+  color: #f6f6ef;
 }
-.scroll-ripple:focus-visible { outline: 3px solid #1d211f; outline-offset: -3px; }
+.scroll-ripple:focus-visible { outline: 2px solid #f6f6ef; outline-offset: -2px; }
 .scroll-ripple__webgl {
   position: absolute;
   z-index: 3;
@@ -28,32 +28,8 @@ const styles = `
 .scroll-ripple__track {
   position: relative;
   z-index: 1;
-  min-height: 2760px;
-  padding: clamp(34px, 5vw, 70px) clamp(18px, 4vw, 48px) 260px;
-}
-.scroll-ripple__intro {
-  min-height: 280px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 28px;
-  align-content: start;
-  border-top: 1px solid #9ba8a2;
-  padding-top: 16px;
-}
-.scroll-ripple__eyebrow,
-.scroll-ripple__year,
-.scroll-ripple__index,
-.scroll-ripple__meta span {
-  font: 600 10px/1.25 "DM Sans", sans-serif;
-  text-transform: uppercase;
-}
-.scroll-ripple__year { color: #68736e; text-align: right; }
-.scroll-ripple__title {
-  grid-column: 1 / -1;
-  max-width: 900px;
-  margin: 10px 0 0;
-  font: 400 clamp(58px, 8vw, 112px)/.82 "Instrument Serif", serif;
-  letter-spacing: 0;
+  min-height: 2460px;
+  padding: clamp(34px, 5vw, 70px) clamp(18px, 4vw, 48px) 220px;
 }
 .scroll-ripple__list {
   display: grid;
@@ -82,42 +58,20 @@ const styles = `
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #c6d2cc;
-  color: #53605a;
+  background: #111;
+  color: #aaa;
   font: 600 11px/1.4 "DM Sans", sans-serif;
   text-align: center;
   text-transform: uppercase;
 }
-.scroll-ripple__meta {
-  display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
-  gap: 16px;
-  align-items: baseline;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #9ba8a2;
-}
-.scroll-ripple__meta h3 {
-  margin: 0;
-  font: 500 clamp(22px, 3vw, 34px)/1 "DM Sans", sans-serif;
-  letter-spacing: 0;
-}
-.scroll-ripple__meta span { color: #68736e; text-align: right; }
-.scroll-ripple__item:nth-child(3) .scroll-ripple__index { color: #f04b32; }
 .scroll-ripple.is-static .scroll-ripple__webgl { display: none; }
 .scroll-ripple.is-static .scroll-ripple__item.is-webgl .scroll-ripple__image { opacity: 1; }
 
 @media (max-width: 680px) {
-  .scroll-ripple__track { min-height: 2860px; padding: 28px 18px 220px; }
-  .scroll-ripple__intro { min-height: 250px; }
-  .scroll-ripple__title { font-size: 64px; }
+  .scroll-ripple__track { min-height: 2600px; padding: 28px 18px 220px; }
   .scroll-ripple__list { grid-template-columns: 1fr; gap: 150px; }
   .scroll-ripple__item { grid-column: 1; }
   .scroll-ripple__media { aspect-ratio: 4 / 5; }
-  .scroll-ripple__meta { grid-template-columns: 32px minmax(0, 1fr); }
-  .scroll-ripple__index { grid-column: 1; grid-row: 1; }
-  .scroll-ripple__meta h3 { grid-column: 2; grid-row: 1; }
-  .scroll-ripple__meta > span:last-child { grid-column: 2; grid-row: 2; text-align: left; }
 }
 `;
 
@@ -214,6 +168,7 @@ const fragmentShader = `
     vec3 color = vec3(red, green, blue);
     color += vWave * 0.1 * vec3(0.2, 0.0, 0.3);
     gl_FragColor = vec4(color, 1.0);
+    #include <colorspace_fragment>
   }
 `;
 
@@ -229,8 +184,6 @@ function removeMediaListener(query, listener) {
 
 export default function ScrollRippleReveal({
   items = defaultItems,
-  eyebrow = "Material Studies / 01-04",
-  title = "Images shaped by movement.",
   depth = 7.5,
   frequency = 0.0055,
   velocityScale = 0.25,
@@ -467,12 +420,6 @@ export default function ScrollRippleReveal({
       <style>{styles}</style>
       <canvas className="scroll-ripple__webgl" ref={canvasRef} aria-hidden="true" />
       <div className="scroll-ripple__track">
-        <header className="scroll-ripple__intro">
-          <span className="scroll-ripple__eyebrow">{eyebrow}</span>
-          <span className="scroll-ripple__year">Archive 2024-2026</span>
-          <h2 className="scroll-ripple__title">{title}</h2>
-        </header>
-
         <div className="scroll-ripple__list">
           {items.map((item, index) => (
             <figure
@@ -492,11 +439,6 @@ export default function ScrollRippleReveal({
                 />
                 {failed[index] && <div className="scroll-ripple__fallback">Media unavailable</div>}
               </div>
-              <figcaption className="scroll-ripple__meta">
-                <span className="scroll-ripple__index">{String(index + 1).padStart(2, "0")}</span>
-                <h3>{item.title}</h3>
-                <span>{item.year}</span>
-              </figcaption>
             </figure>
           ))}
         </div>

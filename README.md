@@ -1,6 +1,6 @@
 # Motion Index
 
-Motion Index 是一个可预览、可复制、可替换内容的 React 网页动效组件库。当前包含 8 个分类、22 个正式组件，覆盖文字揭示、按钮反馈、封面悬停、作品画廊、3D 场景、滚动转场、轨迹绘制和导航。
+Motion Index 是一个可预览、可复制、可替换内容的 React 网页动效组件库。当前包含 8 个分类、21 个正式组件，覆盖文字入场、按钮反馈、封面动效、作品画廊、3D 场景、滚动转场、轨迹绘制和导航。
 
 仓库只包含对外组件网站所需的原创代码与演示资源，不包含来源网站的恢复页面、生产脚本、品牌素材、摄影、截图或研究归档。
 
@@ -16,14 +16,14 @@ Motion Index 是一个可预览、可复制、可替换内容的 React 网页动
 
 ## 组件分类
 
-- 文字与标题：Oval Title Reveal、Lime Text Reveal、Kinetic Marquee
-- 按钮：Rolling Letters、Radial Fill Button、Arrow State
-- 封面与悬停：Layered Image Reveal、Dithered Media Reveal、Scroll Ripple Reveal、Pixel Shimmer Field、Hover Disclosure Card
-- 作品展示：Horizontal Reel、Parallax Collage、Social Fan
-- 3D 场景：Anchored Cloud Field
-- 滚动转场：Hero Shrink Scene、Dual Panel Converge、Oval Section Reveal、Scroll Scatter Scene
+- 文字与标题：上下浮现标题、荧光色块文字入场、跑马灯、径向文字透镜
+- 按钮：Rolling Letters、Staggered Roll Button、Radial Fill Button、Arrow State
+- 封面：双图切换、Pixel Shimmer Field、悬停显示信息
+- 作品展示：滚动水波显现、滚动散射、横向作品轨道、视差作品墙、Social Fan
+- 3D 场景：云朵
+- 滚动转场：缩景转场、Dual Panel Converge
 - 轨迹与绘制：Signature Draw
-- 导航：Staggered Menu、Scroll Direction Nav
+- 导航：全屏菜单
 
 ## 本地运行
 
@@ -44,7 +44,7 @@ npm run build
 npm run preview
 ```
 
-- `npm run check` 检查 22 个正式组件、8 个分类和公开演示资源是否完整。
+- `npm run check` 检查 21 个正式组件、8 个分类和公开演示资源是否完整。
 - `npm run build` 生成只包含 Motion Index 的生产文件，并检查是否混入本地研究标记。
 - `npm run preview` 预览构建后的生产版本。
 

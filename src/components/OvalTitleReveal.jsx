@@ -7,8 +7,8 @@ const styles = `
   place-items: center;
   overflow: hidden;
   padding: clamp(26px, 5vw, 64px);
-  background: #f6f6ef;
-  color: #171812;
+  background: #000;
+  color: #f6f6ef;
 }
 .oval-title-reveal__title { width: 100%; margin: 0; text-align: center; }
 .oval-title-reveal__clip {

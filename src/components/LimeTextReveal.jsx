@@ -7,7 +7,7 @@ const styles = `
   place-items: center;
   overflow: hidden;
   padding: clamp(24px, 4vw, 48px);
-  background: #20251c;
+  background: #000;
   color: #f5f5ee;
 }
 .lime-text-reveal__title { width: 100%; max-width: 1050px; margin: 0; }

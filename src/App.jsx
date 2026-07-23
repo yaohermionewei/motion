@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   Code2,
@@ -10,24 +10,21 @@ import {
   X,
 } from "lucide-react";
 import { categories, motionComponents } from "./data/registry";
+import ShuffleText from "./components/ShuffleText";
 
-function LibraryMark() {
-  return (
-    <div className="library-mark" aria-hidden="true">
-      <img src="/motion-index-mark.svg" alt="" />
-    </div>
-  );
-}
+const defaultComponentId = motionComponents.find(
+  (item) => item.category === categories[0]?.id,
+)?.id ?? motionComponents[0]?.id;
 
-function Sidebar({ selectedId, onSelect, mobileOpen, onClose }) {
+function Sidebar({ selectedId, onSelect, mobileOpen, onClose, compactViewport }) {
   return (
-    <aside className={`sidebar ${mobileOpen ? "is-open" : ""}`}>
+    <aside
+      className={`sidebar ${mobileOpen ? "is-open" : ""}`}
+      aria-hidden={compactViewport && !mobileOpen ? true : undefined}
+      inert={compactViewport && !mobileOpen}
+    >
       <div className="sidebar__brand">
-        <LibraryMark />
-        <div>
-          <strong>Motion Index</strong>
-          <span>精选网页动效参考库</span>
-        </div>
+        <strong className="sidebar__wordmark" aria-label="Motion">MOOOTION</strong>
         <button className="icon-button sidebar__close" onClick={onClose} aria-label="关闭目录" title="关闭目录">
           <X size={18} />
         </button>
@@ -59,7 +56,7 @@ function Sidebar({ selectedId, onSelect, mobileOpen, onClose }) {
       </nav>
 
       <div className="sidebar__foot">
-        <span>©HermioneWei</span>
+        <span className="sidebar__credit">©HermioneWei</span>
       </div>
     </aside>
   );
@@ -105,12 +102,16 @@ async function writeClipboard(text) {
 export default function App() {
   const initialId = window.location.hash.slice(1);
   const [selectedId, setSelectedId] = useState(
-    motionComponents.some((item) => item.id === initialId) ? initialId : motionComponents[0].id,
+    motionComponents.some((item) => item.id === initialId) ? initialId : defaultComponentId,
   );
   const [view, setView] = useState("preview");
   const [replayKey, setReplayKey] = useState(0);
   const [copied, setCopied] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [compactViewport, setCompactViewport] = useState(() =>
+    window.matchMedia("(max-width: 1200px)").matches,
+  );
+  const mobileMenuTriggerRef = useRef(null);
 
   const selected = useMemo(
     () => motionComponents.find((item) => item.id === selectedId),
@@ -122,6 +123,62 @@ export default function App() {
     setView("preview");
     setReplayKey((value) => value + 1);
   }, [selectedId]);
+
+  useEffect(() => {
+    const compactQuery = window.matchMedia("(max-width: 1200px)");
+    const syncScrollLock = () => {
+      setCompactViewport(compactQuery.matches);
+      document.documentElement.classList.toggle(
+        "is-library-menu-open",
+        mobileOpen && compactQuery.matches,
+      );
+      if (!compactQuery.matches && mobileOpen) setMobileOpen(false);
+    };
+    const handleKeyDown = (event) => {
+      if (!mobileOpen || !compactQuery.matches) return;
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMobileOpen(false);
+        window.requestAnimationFrame(() => mobileMenuTriggerRef.current?.focus());
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const sidebar = document.querySelector(".sidebar");
+      const focusable = [...sidebar.querySelectorAll(
+        'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      )].filter((element) => !element.closest('[aria-hidden="true"]'));
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    syncScrollLock();
+    if (mobileOpen && compactQuery.matches) {
+      window.requestAnimationFrame(() => document.querySelector(".sidebar__close")?.focus());
+    }
+    compactQuery.addEventListener("change", syncScrollLock);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      compactQuery.removeEventListener("change", syncScrollLock);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.documentElement.classList.remove("is-library-menu-open");
+    };
+  }, [mobileOpen]);
+
+  function closeMobileMenu() {
+    setMobileOpen(false);
+    window.requestAnimationFrame(() => mobileMenuTriggerRef.current?.focus());
+  }
 
   async function copySource() {
     await writeClipboard(selected.source);
@@ -137,30 +194,52 @@ export default function App() {
         selectedId={selectedId}
         onSelect={setSelectedId}
         mobileOpen={mobileOpen}
-        onClose={() => setMobileOpen(false)}
+        onClose={closeMobileMenu}
+        compactViewport={compactViewport}
       />
-      {mobileOpen && <button className="sidebar-backdrop" onClick={() => setMobileOpen(false)} aria-label="关闭目录" />}
+      {mobileOpen && (
+        <button
+          className="sidebar-backdrop"
+          onClick={closeMobileMenu}
+          tabIndex={-1}
+          aria-hidden="true"
+        />
+      )}
 
-      <main className="workspace">
+      <main
+        className="workspace"
+        aria-hidden={compactViewport && mobileOpen ? true : undefined}
+        inert={compactViewport && mobileOpen}
+      >
         <div className="component-page">
           <section className="component-head">
-            <button className="icon-button component-head__menu" onClick={() => setMobileOpen(true)} aria-label="打开目录" title="打开目录">
+            <button ref={mobileMenuTriggerRef} className="icon-button component-head__menu" onClick={() => setMobileOpen(true)} aria-label="打开目录" title="打开目录">
               <Menu size={19} />
             </button>
             <div className="component-head__copy">
-              <h1><span>{selected.title}</span></h1>
+              <div className="component-title-lockup">
+                <h1><span>{selected.title}</span></h1>
+                <p className="component-english" lang="en">
+                  {selected.english}
+                </p>
+              </div>
             </div>
-            <p className="component-tech">React · CSS · WebGL</p>
+            <p
+              className="component-tech"
+              aria-label={`核心实现：${selected.implementation.join("、")}`}
+            >
+              {selected.implementation.join(" · ")}
+            </p>
           </section>
 
           <section className="demo-tool">
             <div className="tool-row">
               <div className="segmented-control" aria-label="视图切换">
                 <button className={view === "preview" ? "is-active" : ""} onClick={() => setView("preview")}>
-                  <Eye size={15} /> Preview
+                  <Eye size={15} /> <ShuffleText text="Preview" enabled />
                 </button>
                 <button className={view === "code" ? "is-active" : ""} onClick={() => setView("code")}>
-                  <Code2 size={15} /> Code
+                  <Code2 size={15} /> <ShuffleText text="Code" enabled />
                 </button>
               </div>
               <div className="tool-actions">
@@ -175,12 +254,15 @@ export default function App() {
                     aria-label="下载云朵 PNG 图片"
                   >
                     <Download size={16} />
-                    下载图片
+                    <ShuffleText text="下载图片" enabled />
                   </a>
                 )}
                 <button className="command-button" onClick={copySource}>
                   {copied ? <Check size={16} /> : <Copy size={16} />}
-                  {copied ? "已复制" : "复制代码"}
+                  <ShuffleText
+                    text={copied ? "已复制" : "复制代码"}
+                    enabled
+                  />
                 </button>
               </div>
             </div>

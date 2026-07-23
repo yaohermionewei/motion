@@ -1,23 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 
 const styles = `
-.social-fan { min-height: 100%; position: relative; overflow: hidden; display: grid; align-content: space-between; padding: clamp(24px, 3vw, 36px); background: #f6f6ef; color: #171812; }
-.social-fan__head { position: relative; z-index: 20; text-align: center; }
-.social-fan__title { margin: 0; font: 600 clamp(36px, 4.7vw, 56px)/.8 "DM Sans", sans-serif; }
-.social-fan__title span { display: block; font-family: "Instrument Serif", serif; font-weight: 400; }
-.social-fan__deck { position: absolute; z-index: 2; left: 50%; top: 60%; width: 100%; height: 56%; transform: translate(-50%, -50%); }
+.social-fan { min-height: 100%; position: relative; overflow: hidden; background: #000; color: #f6f6ef; }
+.social-fan__deck { position: absolute; z-index: 2; left: 50%; top: 50%; width: 100%; height: 72%; transform: translate(-50%, -50%); }
 .social-fan__rise { position: absolute; left: 50%; top: 50%; width: clamp(100px, 12.8vw, 164px); aspect-ratio: 4 / 7; z-index: var(--z); transform: translate(-50%, -50%) translateY(160px); will-change: transform; }
-.social-fan__card { --fan-x: var(--x-desktop); --fan-y: var(--y-desktop); --fan-rotation: var(--rotation); width: 100%; height: 100%; padding: 0; border: 0; border-radius: 20px; overflow: hidden; background: #c8cec7; box-shadow: 0 18px 46px rgba(20,22,17,.14); cursor: pointer; transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotation)) scale(var(--scale)); transition: transform 500ms cubic-bezier(.18,1.35,.32,1), box-shadow 300ms ease; transition-delay: var(--interaction-delay); transform-origin: center; will-change: transform; }
+.social-fan__card { --fan-x: var(--x-desktop); --fan-y: var(--y-desktop); --fan-rotation: var(--rotation); width: 100%; height: 100%; padding: 0; border: 0; border-radius: 20px; overflow: hidden; background: #111; box-shadow: 0 18px 46px rgba(0,0,0,.32); cursor: pointer; transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotation)) scale(var(--scale)); transition: transform 500ms cubic-bezier(.18,1.35,.32,1), box-shadow 300ms ease; transition-delay: var(--interaction-delay); transform-origin: center; will-change: transform; }
 .social-fan:not(.is-entered) .social-fan__card { transform: translate(0, 0) rotate(0) scale(1); }
 .social-fan.is-entered:not(.is-settled) .social-fan__rise { animation: social-fan-rise 800ms cubic-bezier(.25,.46,.45,.94) var(--rise-delay) both; }
 .social-fan.is-entered:not(.is-settled) .social-fan__card { pointer-events: none; animation: social-fan-spread 1200ms cubic-bezier(.18,1.35,.32,1) var(--spread-delay) both; transition: none; }
 .social-fan.is-settled .social-fan__rise { transform: translate(-50%, -50%) translateY(0); }
 .social-fan__card:hover, .social-fan__card:focus-visible { box-shadow: 0 28px 70px rgba(20,22,17,.22); }
-.social-fan__card:focus-visible { outline: 3px solid #171812; outline-offset: 5px; }
+.social-fan__card:focus-visible { outline: 2px solid #f6f6ef; outline-offset: 5px; }
 .social-fan__image { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 720ms cubic-bezier(.16,1,.3,1), filter 350ms ease; }
 .social-fan__card:hover .social-fan__image, .social-fan__card:focus-visible .social-fan__image, .social-fan__card.is-active .social-fan__image { transform: scale(1.045); filter: saturate(1.08); }
-.social-fan__index { position: absolute; z-index: 3; left: 12px; top: 12px; padding: 7px 8px; background: #d9ff42; color: #171812; font: 600 9px/1 "DM Sans", sans-serif; }
-.social-fan__foot { position: relative; z-index: 20; display: flex; justify-content: center; gap: 28px; color: #666a62; font: 600 10px/1.2 "DM Sans", sans-serif; text-transform: uppercase; }
 @keyframes social-fan-rise {
   from { transform: translate(-50%, -50%) translateY(160px); }
   to { transform: translate(-50%, -50%) translateY(0); }
@@ -27,10 +22,9 @@ const styles = `
   to { transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotation)) scale(var(--scale)); }
 }
 @media (max-width: 700px) {
-  .social-fan__deck { top: 62%; height: 52%; }
+  .social-fan__deck { height: 60%; }
   .social-fan__rise { width: 110px; }
   .social-fan__card { --fan-x: var(--x-mobile); --fan-y: var(--y-mobile); --fan-rotation: var(--mobile-rotation); border-radius: 18px; }
-  .social-fan__foot { gap: 14px; flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   .social-fan__rise, .social-fan__card, .social-fan__image { animation: none !important; transition: none; }
@@ -153,7 +147,6 @@ export default function SocialFan({ cards = images }) {
       onPointerLeave={handleGalleryLeave}
     >
       <style>{styles}</style>
-      <div className="social-fan__head"><h2 className="social-fan__title">What’s moving <span>through the studio?</span></h2></div>
       <div className="social-fan__deck">
         {cards.slice(0, 7).map((image, index) => {
           const position = positionFor(index, active);
@@ -194,13 +187,11 @@ export default function SocialFan({ cards = images }) {
                 aria-label={`Select gallery card ${index + 1}`}
               >
                 <img className="social-fan__image" src={image} alt="" />
-                <span className="social-fan__index">{String(index + 1).padStart(2, "0")}</span>
               </button>
             </div>
           );
         })}
       </div>
-      <div className="social-fan__foot"><span>Work</span><span>Process</span><span>People</span><span>Notes</span></div>
     </section>
   );
 }

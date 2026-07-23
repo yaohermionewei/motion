@@ -1,21 +1,14 @@
 import { useState } from "react";
 
 const styles = `
-.parallax-collage { height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; background: #f3f2ec; color: #171812; }
-.parallax-collage:focus-visible { outline: 3px solid #171812; outline-offset: -3px; }
+.parallax-collage { height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; background: #000; color: #f6f6ef; }
+.parallax-collage:focus-visible { outline: 2px solid #f6f6ef; outline-offset: -2px; }
 .parallax-collage__canvas { position: relative; min-height: 1580px; overflow: hidden; }
-.parallax-collage__head { position: sticky; z-index: 5; top: 0; display: flex; justify-content: space-between; gap: 20px; padding: 24px clamp(22px, 5vw, 58px); background: linear-gradient(#f3f2ec 55%, rgba(243,242,236,0)); pointer-events: none; }
-.parallax-collage__head span { padding: 4px 6px; background: #d9ff42; color: #171812; font: 600 11px/1.3 "DM Sans", sans-serif; text-transform: uppercase; }
-.parallax-collage__head small { color: #6d7068; font: 600 11px/1.3 "DM Sans", sans-serif; }
-.parallax-collage__title { position: absolute; z-index: 2; top: 10%; left: clamp(24px, 7vw, 92px); width: min(700px, 74%); margin: 0; font: 400 clamp(58px, 9vw, 126px)/.82 "Instrument Serif", serif; }
 .parallax-collage__card { position: absolute; z-index: 1; left: var(--left); top: var(--top); width: var(--width); margin: 0; transform: translateY(var(--shift)) rotate(var(--rotate)); transition: transform 80ms linear; will-change: transform; }
 .parallax-collage__card:nth-of-type(even) { z-index: 3; }
 .parallax-collage__image { width: 100%; aspect-ratio: var(--ratio); display: block; object-fit: cover; box-shadow: 0 24px 60px rgba(24,25,20,.12); }
-.parallax-collage__caption { display: flex; justify-content: space-between; gap: 12px; margin-top: 9px; font: 600 10px/1.2 "DM Sans", sans-serif; text-transform: uppercase; }
-.parallax-collage__caption span:last-child { color: #777a72; }
 @media (max-width: 680px) {
   .parallax-collage__canvas { min-height: 1420px; }
-  .parallax-collage__title { top: 9%; width: 90%; }
   .parallax-collage__card { width: calc(var(--width) * 1.2); }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -46,8 +39,6 @@ export default function ParallaxCollage({ items = projects }) {
     <section className="parallax-collage" onScroll={handleScroll} tabIndex={0} aria-label="Scrollable project collage">
       <style>{styles}</style>
       <div className="parallax-collage__canvas">
-        <div className="parallax-collage__head"><span>Selected archive</span><small>Scroll inside the preview</small></div>
-        <h2 className="parallax-collage__title">A living wall of selected work.</h2>
         {items.map((item) => (
           <figure
             className="parallax-collage__card"
@@ -63,7 +54,6 @@ export default function ParallaxCollage({ items = projects }) {
             }}
           >
             <img className="parallax-collage__image" src={item.image} alt={item.alt || ""} />
-            <figcaption className="parallax-collage__caption"><span>{item.title}</span><span>{item.year}</span></figcaption>
           </figure>
         ))}
       </div>

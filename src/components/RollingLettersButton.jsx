@@ -6,10 +6,10 @@ const styles = `
   display: grid;
   place-items: center;
   padding: clamp(24px, 4vw, 48px);
-  background: #f5f6f1;
-  color: #171812;
+  background: #000;
+  color: #f6f6ef;
 }
-.rolling-letters__demo { display: grid; justify-items: start; gap: 10px; width: min(560px, 100%); margin: 0; }
+.rolling-letters__demo { display: grid; width: min(560px, 100%); margin: 0; }
 .rolling-letters__button {
   min-width: min(560px, 100%);
   display: flex;
@@ -17,14 +17,12 @@ const styles = `
   justify-content: space-between;
   gap: 28px;
   padding: 16px 22px;
-  border: 1px solid #171812;
+  border: 1px solid #f6f6ef;
   background: transparent;
-  color: #171812;
+  color: #f6f6ef;
   text-align: left;
   cursor: pointer;
 }
-.rolling-letters__button--lime { background: #d9ff42; }
-.rolling-letters__button--dark { background: #20251c; color: #f6f6ef; }
 .rolling-letters__label { display: flex; overflow: hidden; font: 600 clamp(20px, 3.2vw, 36px)/1 "DM Sans", sans-serif; }
 .rolling-letters__char {
   display: inline-block;
@@ -36,7 +34,7 @@ const styles = `
 .rolling-letters__button:hover .rolling-letters__char,
 .rolling-letters__button:focus-visible .rolling-letters__char,
 .rolling-letters__button.is-active .rolling-letters__char { transform: translateY(-1.08em); }
-.rolling-letters__button:focus-visible { outline: 3px solid #171812; outline-offset: 4px; }
+.rolling-letters__button:focus-visible { outline: 2px solid #f6f6ef; outline-offset: 4px; }
 .rolling-letters__arrow { flex: 0 0 auto; font: 500 28px/1 "DM Sans", sans-serif; transition: transform 560ms cubic-bezier(.16,1,.3,1); }
 .rolling-letters__button:hover .rolling-letters__arrow,
 .rolling-letters__button:focus-visible .rolling-letters__arrow,
@@ -62,9 +60,7 @@ function RollingLabel({ text }) {
 }
 
 const buttons = [
-  { text: "View selected work", variant: "lime" },
-  { text: "Meet the studio", variant: "plain" },
-  { text: "Start a project", variant: "dark" },
+  { text: "View selected work", variant: "plain" },
 ];
 
 export default function RollingLettersButton() {

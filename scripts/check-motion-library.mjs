@@ -5,11 +5,13 @@ const componentFiles = [
   "OvalTitleReveal.jsx",
   "LimeTextReveal.jsx",
   "KineticMarquee.jsx",
+  "RadialTextLens.jsx",
   "RollingLettersButton.jsx",
+  "StaggeredRollButton.jsx",
+  "ShuffleText.jsx",
   "RadialFillButton.jsx",
   "ArrowStateButton.jsx",
   "LayeredImageReveal.jsx",
-  "DitheredMediaReveal.jsx",
   "ScrollRippleReveal.jsx",
   "PixelShimmerField.jsx",
   "HoverDisclosureCard.jsx",
@@ -19,18 +21,18 @@ const componentFiles = [
   "AnchoredCloudField.jsx",
   "HeroShrinkScene.jsx",
   "DualPanelConverge.jsx",
-  "OvalSectionReveal.jsx",
   "ScrollScatterScene.jsx",
   "SignatureDraw.jsx",
   "StaggeredMenu.jsx",
-  "ScrollDirectionNav.jsx",
 ];
 const requiredFiles = [
   "index.html",
   "src/App.jsx",
   "src/main.jsx",
   "src/styles.css",
+  "src/theme.css",
   "src/data/registry.js",
+  "src/components/ShuffleText.css",
   ...componentFiles.map((name) => `src/components/${name}`),
 ];
 const imageFiles = [
@@ -47,6 +49,8 @@ const imageFiles = [
 ];
 const requiredAssets = [
   "public/motion-index-mark.svg",
+  "public/fonts/noto-sans-latin-400-normal.woff2",
+  "public/fonts/OFL-Noto-Sans.txt",
   "public/images/air-cloud.png",
   ...imageFiles.flatMap((name) => [
     `public/images/${name}.png`,
@@ -57,11 +61,12 @@ const componentIds = [
   "oval-title-reveal",
   "lime-text-reveal",
   "kinetic-marquee",
+  "radial-text-lens",
   "rolling-letters",
+  "staggered-roll-button",
   "radial-fill-button",
   "arrow-state",
   "layered-image-reveal",
-  "dithered-media-reveal",
   "scroll-ripple-reveal",
   "pixel-shimmer-field",
   "hover-disclosure-card",
@@ -71,14 +76,19 @@ const componentIds = [
   "anchored-cloud-field",
   "hero-shrink-scene",
   "dual-panel-converge",
-  "oval-section-reveal",
   "scroll-scatter-scene",
   "signature-draw",
   "staggered-menu",
-  "scroll-direction-nav",
 ];
 const categoryIds = ["type", "buttons", "covers", "galleries", "scenes-3d", "transitions", "paths", "navigation"];
-const localOnlyMarkers = ["reference-sites/", "直接移植"];
+const localOnlyMarkers = [
+  "reference-sites/",
+  "直接移植",
+  "UnicornStudio",
+  "hero-scene-data",
+  "Moonshot AI",
+  "NotoSans-Latin",
+];
 
 const sources = await Promise.all(
   requiredFiles.map(async (path) => ({ path, source: await readFile(new URL(path, root), "utf8") })),

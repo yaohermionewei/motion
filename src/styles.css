@@ -93,6 +93,17 @@ html, body, #root { min-height: 100%; margin: 0; }
 button, input { font: inherit; }
 button { letter-spacing: 0; }
 
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 body {
   min-width: 320px;
   overflow-x: hidden;
@@ -149,10 +160,8 @@ a:focus-visible {
   background: var(--accent);
 }
 
-.sidebar__brand strong,
-.sidebar__brand span { display: block; }
-
-.sidebar__brand strong {
+.sidebar__wordmark {
+  display: block;
   font-family: var(--display);
   font-size: 18px;
   font-weight: 800;
@@ -160,35 +169,10 @@ a:focus-visible {
   text-transform: uppercase;
 }
 
-.sidebar__brand span {
-  margin-top: 7px;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.35;
-}
-
 .sidebar__close {
   display: none !important;
   margin-left: auto;
   background: var(--pink) !important;
-}
-
-.library-mark {
-  width: 44px;
-  height: 44px;
-  flex: 0 0 auto;
-  overflow: hidden;
-  border: var(--border);
-  border-radius: 10px;
-  background: white;
-  box-shadow: var(--shadow-sm);
-  transform: rotate(-2deg);
-}
-
-.library-mark img {
-  width: 100%;
-  height: 100%;
-  display: block;
 }
 
 .sidebar__nav {
@@ -233,14 +217,7 @@ a:focus-visible {
   color: var(--ink);
   text-align: left;
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
-}
-
-.nav-item:hover {
-  border-color: var(--ink);
-  background: white;
-  box-shadow: var(--shadow-sm);
-  transform: translate(-2px, -2px);
+  transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 160ms ease;
 }
 
 .nav-item.is-active {
@@ -249,11 +226,18 @@ a:focus-visible {
   box-shadow: var(--shadow-sm);
 }
 
-.nav-item.is-active:hover { background: var(--accent); }
+@media (hover: hover) and (pointer: fine) {
+  .nav-item:not(.is-active):hover {
+    background-color: rgba(255, 212, 59, .24);
+    transform: translateX(3px);
+  }
 
-.nav-item:active {
-  box-shadow: 1px 1px 0 var(--ink);
-  transform: translate(1px, 1px);
+  .nav-item.is-active:hover { background-color: var(--accent); }
+
+  .nav-item:active {
+    box-shadow: 1px 1px 0 var(--ink);
+    transform: translate(1px, 1px);
+  }
 }
 
 .nav-item strong,
@@ -277,10 +261,13 @@ a:focus-visible {
 .nav-item.is-active strong { color: #000; }
 
 .sidebar__foot {
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 13px 18px;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px 12px;
   border-top: var(--border);
   background: var(--paper);
   color: var(--muted);
@@ -289,6 +276,11 @@ a:focus-visible {
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0;
+}
+
+.sidebar__credit {
+  padding-inline: 2px;
+  white-space: nowrap;
 }
 
 .sidebar-backdrop { display: none; }
@@ -322,7 +314,17 @@ a:focus-visible {
 
 .component-head__menu { display: none !important; }
 
+.component-head__copy { min-width: 0; }
+
+.component-title-lockup {
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
 .component-head h1 {
+  min-width: 0;
   display: block;
   margin: 0;
   font-family: var(--display);
@@ -338,12 +340,30 @@ a:focus-visible {
   font-weight: 800;
 }
 
+.component-english {
+  flex: 0 0 auto;
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .component-tech {
   margin: 0 0 4px;
   color: var(--muted);
+  font-family: var(--mono);
   font-size: 9px;
   font-weight: 400;
   line-height: 1;
+  letter-spacing: 0;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .demo-tool {
@@ -533,7 +553,6 @@ a:focus-visible {
 
   .component-head { padding-right: 64px; }
   .component-tech { display: none; }
-
   .component-head__menu {
     position: absolute;
     z-index: 2;
@@ -576,6 +595,14 @@ a:focus-visible {
     margin: 0;
     font-size: 34px;
   }
+
+  .component-title-lockup {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .component-english { margin: 0; }
 
   .demo-tool {
     border-radius: 14px;

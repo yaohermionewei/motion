@@ -4,41 +4,17 @@ const styles = `
 .radial-fill {
   min-height: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
-  gap: 64px;
-  align-items: center;
+  place-items: center;
   padding: 54px clamp(38px, 7vw, 94px);
-  background: #e8efeb;
-  color: #20211d;
+  background: #000;
+  color: #f6f6ef;
 }
-.radial-fill__copy { max-width: 650px; }
-.radial-fill__index {
-  width: fit-content;
-  margin: 0 0 22px;
-  padding: 5px 7px;
-  background: #ff6547;
-  color: #20211d;
-  font: 600 10px/1 "DM Sans", sans-serif;
-  text-transform: uppercase;
-}
-.radial-fill__title {
-  margin: 0;
-  font: 400 60px/.92 "Instrument Serif", serif;
-  letter-spacing: 0;
-  text-wrap: balance;
-}
-.radial-fill__note {
-  max-width: 480px;
-  margin: 22px 0 0;
-  color: #61675f;
-  font: 500 14px/1.5 "DM Sans", sans-serif;
-}
-.radial-fill__buttons { display: grid; gap: 12px; }
+.radial-fill__buttons { width: min(420px, 100%); display: grid; }
 .radial-fill__button {
-  --base: #f8f8f2;
-  --fill: #a5beb8;
-  --text: #20211d;
-  --active-text: #20211d;
+  --base: transparent;
+  --fill: #f6f6ef;
+  --text: #f6f6ef;
+  --active-text: #000;
   position: relative;
   height: 58px;
   display: grid;
@@ -47,15 +23,13 @@ const styles = `
   align-items: center;
   overflow: hidden;
   padding: 0 22px;
-  border: 1px solid rgba(32,33,29,.72);
+  border: 1px solid #f6f6ef;
   border-radius: 999px;
   background: var(--base);
   color: var(--text);
   cursor: pointer;
   isolation: isolate;
 }
-.radial-fill__button--dark { --base: #20211d; --fill: #d9ff42; --text: #f8f8f2; --active-text: #20211d; }
-.radial-fill__button--mint { --base: #a5beb8; --fill: #f8f8f2; --text: #20211d; --active-text: #20211d; }
 .radial-fill__fill {
   position: absolute;
   z-index: -1;
@@ -97,15 +71,11 @@ const styles = `
 .radial-fill__button:hover .radial-fill__arrow,
 .radial-fill__button:focus-visible .radial-fill__arrow,
 .radial-fill__button.is-active .radial-fill__arrow { transform: translateX(4px); }
-.radial-fill__button:focus-visible { outline: 3px solid #20211d; outline-offset: 4px; }
+.radial-fill__button:focus-visible { outline: 2px solid #f6f6ef; outline-offset: 4px; }
 
 @media (max-width: 700px) {
-  .radial-fill { grid-template-columns: 1fr; gap: 34px; align-content: center; padding: 34px 22px; }
-  .radial-fill__copy { max-width: 340px; }
-  .radial-fill__index { margin-bottom: 14px; }
-  .radial-fill__title { font-size: 42px; line-height: .94; }
-  .radial-fill__note { margin-top: 14px; font-size: 12px; }
-  .radial-fill__buttons { width: 100%; gap: 9px; }
+  .radial-fill { padding: 34px 22px; }
+  .radial-fill__buttons { width: 100%; }
   .radial-fill__button { height: 52px; padding: 0 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -115,8 +85,6 @@ const styles = `
 
 const defaultButtons = [
   { label: "View the archive", activeLabel: "Archive is open", tone: "light" },
-  { label: "Read field notes", activeLabel: "Notes are ready", tone: "mint" },
-  { label: "Start a new brief", activeLabel: "Begin the brief", tone: "dark" },
 ];
 
 export default function RadialFillButton({ items = defaultButtons }) {
@@ -125,11 +93,6 @@ export default function RadialFillButton({ items = defaultButtons }) {
   return (
     <section className="radial-fill">
       <style>{styles}</style>
-      <div className="radial-fill__copy">
-        <p className="radial-fill__index">Response study / 03</p>
-        <h2 className="radial-fill__title">A small signal becomes the whole response.</h2>
-        <p className="radial-fill__note">Every invitation should feel clear, immediate, and impossible to overlook.</p>
-      </div>
       <div className="radial-fill__buttons">
         {items.map((item, index) => (
           <button

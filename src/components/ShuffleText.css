@@ -1,0 +1,78 @@
+.shuffle-text {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.shuffle-text__animated {
+  display: none;
+}
+
+.shuffle-text.is-enabled .shuffle-text__static {
+  display: none;
+}
+
+.shuffle-text.is-enabled .shuffle-text__animated {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.shuffle-text__char {
+  height: 1em;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 1;
+}
+
+.shuffle-text__stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.shuffle-text.is-enabled .shuffle-text__stack {
+  will-change: transform;
+}
+
+.shuffle-text__stack > span {
+  height: 1em;
+  display: block;
+  flex: 0 0 1em;
+  line-height: 1;
+}
+
+@keyframes shuffle-text-up {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, -50%, 0); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(button, a, [role="button"]):hover .shuffle-text.is-enabled .shuffle-text__stack {
+    animation:
+      shuffle-text-up
+      var(--shuffle-duration, 350ms)
+      var(--shuffle-ease, cubic-bezier(.215, .61, .355, 1))
+      var(--shuffle-delay, 0ms)
+      both;
+  }
+}
+
+:where(button, a, [role="button"]):focus-visible .shuffle-text.is-enabled .shuffle-text__stack {
+  animation:
+    shuffle-text-up
+    var(--shuffle-duration, 350ms)
+    var(--shuffle-ease, cubic-bezier(.215, .61, .355, 1))
+    var(--shuffle-delay, 0ms)
+    both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shuffle-text.is-enabled .shuffle-text__stack {
+    animation: none !important;
+    transform: translate3d(0, 0, 0) !important;
+    will-change: auto;
+  }
+}
