@@ -133,6 +133,7 @@ a:focus-visible {
 
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   grid-template-columns: 304px minmax(0, 1fr);
 }
@@ -142,6 +143,7 @@ a:focus-visible {
   top: 0;
   z-index: 20;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -177,10 +179,14 @@ a:focus-visible {
 
 .sidebar__nav {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding: 6px 0 24px;
   scrollbar-color: var(--ink) transparent;
   scrollbar-width: thin;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .nav-group { padding: 18px 16px 4px; }
@@ -564,10 +570,18 @@ a:focus-visible {
 }
 
 @media (max-width: 940px) {
+  .workspace {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   .component-page {
-    height: auto;
-    min-height: 100vh;
-    display: block;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    display: flex;
+    overflow: hidden;
   }
 
   .component-head {
@@ -576,11 +590,16 @@ a:focus-visible {
     align-items: start;
   }
 
-  .demo-tool { display: block; }
+  .demo-tool {
+    min-height: 0;
+    display: flex;
+  }
 
   .demo-stage {
-    height: 620px;
-    min-height: 620px;
+    height: auto;
+    min-height: 0;
+    max-height: 620px;
+    flex: 1 1 auto;
   }
 }
 

@@ -102,7 +102,7 @@ a:focus-visible {
   min-height: 96px;
   gap: 13px;
   padding: 18px;
-  border-bottom: var(--px-line-soft);
+  border-bottom: 0;
   background:
     linear-gradient(180deg, var(--px-bg) 25%, rgba(0, 0, 0, 0) 100%),
     radial-gradient(rgba(255, 255, 255, .10) 1px, transparent 1.5px) 0 0 / 7px 7px,
@@ -128,6 +128,11 @@ a:focus-visible {
 
 .sidebar__close:hover {
   color: var(--px-invert-fg);
+}
+
+.sidebar__close:focus-visible,
+.component-head__menu:focus-visible {
+  outline: none;
 }
 
 .sidebar__nav {
@@ -713,7 +718,12 @@ a:focus-visible {
   }
 
   .sidebar {
+    border-right: 0;
     box-shadow: none;
+  }
+
+  .component-head__menu {
+    position: absolute;
   }
 }
 
