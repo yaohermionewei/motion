@@ -19,7 +19,7 @@ Motion Index 是一个可预览、可复制、可替换内容的 React 网页动
 - 文字与标题：上下浮现标题、荧光色块文字入场、跑马灯、径向文字透镜
 - 按钮：Rolling Letters、Staggered Roll Button、Radial Fill Button、Arrow State
 - 封面：双图切换、Pixel Shimmer Field、悬停显示信息
-- 作品展示：滚动水波显现、滚动散射、横向作品轨道、视差作品墙、Social Fan
+- 作品展示：滚动水波显现、滚动散射、横向作品轨道、视差作品墙、Fanned Image Gallery
 - 3D 场景：云朵
 - 滚动转场：缩景转场、Dual Panel Converge
 - 轨迹与绘制：Signature Draw

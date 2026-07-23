@@ -26,8 +26,8 @@ import HorizontalReel from "../components/HorizontalReel";
 import horizontalReelSource from "../components/HorizontalReel.jsx?raw";
 import ParallaxCollage from "../components/ParallaxCollage";
 import parallaxCollageSource from "../components/ParallaxCollage.jsx?raw";
-import SocialFan from "../components/SocialFan";
-import socialFanSource from "../components/SocialFan.jsx?raw";
+import FannedImageGallery from "../components/FannedImageGallery";
+import fannedImageGallerySource from "../components/FannedImageGallery.jsx?raw";
 import AnchoredCloudField from "../components/AnchoredCloudField";
 import anchoredCloudFieldSource from "../components/AnchoredCloudField.jsx?raw";
 import HeroShrinkScene from "../components/HeroShrinkScene";
@@ -198,16 +198,16 @@ export const motionComponents = [
     source: horizontalReelSource,
   },
   {
-    id: "social-fan",
+    id: "fanned-image-gallery",
     category: "galleries",
     title: "七卡扇形画廊",
-    english: "Social Fan",
+    english: "Fanned Image Gallery",
     description: "七张卡从中央堆叠状态错峰展开，指向其中一张时当前卡上移放大，邻卡向两侧让位。",
     complexity: "中等",
     interaction: "进入视口、悬停、聚焦或点击",
     implementation: ["DOM", "CSS keyframes", "IntersectionObserver"],
-    Component: SocialFan,
-    source: socialFanSource,
+    Component: FannedImageGallery,
+    source: fannedImageGallerySource,
   },
   {
     id: "scroll-ripple-reveal",

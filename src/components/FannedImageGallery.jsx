@@ -1,33 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 
 const styles = `
-.social-fan { min-height: 100%; position: relative; overflow: hidden; background: #000; color: #f6f6ef; }
-.social-fan__deck { position: absolute; z-index: 2; left: 50%; top: 50%; width: 100%; height: 72%; transform: translate(-50%, -50%); }
-.social-fan__rise { position: absolute; left: 50%; top: 50%; width: clamp(100px, 12.8vw, 164px); aspect-ratio: 4 / 7; z-index: var(--z); transform: translate(-50%, -50%) translateY(160px); will-change: transform; }
-.social-fan__card { --fan-x: var(--x-desktop); --fan-y: var(--y-desktop); --fan-rotation: var(--rotation); width: 100%; height: 100%; padding: 0; border: 0; border-radius: 20px; overflow: hidden; background: #111; box-shadow: 0 18px 46px rgba(0,0,0,.32); cursor: pointer; transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotation)) scale(var(--scale)); transition: transform 500ms cubic-bezier(.18,1.35,.32,1), box-shadow 300ms ease; transition-delay: var(--interaction-delay); transform-origin: center; will-change: transform; }
-.social-fan:not(.is-entered) .social-fan__card { transform: translate(0, 0) rotate(0) scale(1); }
-.social-fan.is-entered:not(.is-settled) .social-fan__rise { animation: social-fan-rise 800ms cubic-bezier(.25,.46,.45,.94) var(--rise-delay) both; }
-.social-fan.is-entered:not(.is-settled) .social-fan__card { pointer-events: none; animation: social-fan-spread 1200ms cubic-bezier(.18,1.35,.32,1) var(--spread-delay) both; transition: none; }
-.social-fan.is-settled .social-fan__rise { transform: translate(-50%, -50%) translateY(0); }
-.social-fan__card:hover, .social-fan__card:focus-visible { box-shadow: 0 28px 70px rgba(20,22,17,.22); }
-.social-fan__card:focus-visible { outline: 2px solid #f6f6ef; outline-offset: 5px; }
-.social-fan__image { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 720ms cubic-bezier(.16,1,.3,1), filter 350ms ease; }
-.social-fan__card:hover .social-fan__image, .social-fan__card:focus-visible .social-fan__image, .social-fan__card.is-active .social-fan__image { transform: scale(1.045); filter: saturate(1.08); }
-@keyframes social-fan-rise {
+.fanned-image-gallery { min-height: 100%; position: relative; overflow: hidden; background: #000; color: #f6f6ef; }
+.fanned-image-gallery__deck { position: absolute; z-index: 2; left: 50%; top: 50%; width: 100%; height: 72%; transform: translate(-50%, -50%); }
+.fanned-image-gallery__rise { position: absolute; left: 50%; top: 50%; width: clamp(160px, 20.48vw, 262px); aspect-ratio: 4 / 7; z-index: var(--z); transform: translate(-50%, -50%) translateY(160px); will-change: transform; }
+.fanned-image-gallery__card { --fan-x: var(--x-desktop); --fan-y: var(--y-desktop); --fan-rotation: var(--rotation); width: 100%; height: 100%; padding: 0; border: 0; border-radius: 20px; overflow: hidden; background: #111; box-shadow: 0 18px 46px rgba(0,0,0,.32); cursor: pointer; transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotation)) scale(var(--scale)); transition: transform 500ms cubic-bezier(.18,1.35,.32,1), box-shadow 300ms ease; transition-delay: var(--interaction-delay); transform-origin: center; will-change: transform; }
+.fanned-image-gallery:not(.is-entered) .fanned-image-gallery__card { transform: translate(0, 0) rotate(0) scale(1); }
+.fanned-image-gallery.is-entered:not(.is-settled) .fanned-image-gallery__rise { animation: fanned-image-gallery-rise 800ms cubic-bezier(.25,.46,.45,.94) var(--rise-delay) both; }
+.fanned-image-gallery.is-entered:not(.is-settled) .fanned-image-gallery__card { pointer-events: none; animation: fanned-image-gallery-spread 1200ms cubic-bezier(.18,1.35,.32,1) var(--spread-delay) both; transition: none; }
+.fanned-image-gallery.is-settled .fanned-image-gallery__rise { transform: translate(-50%, -50%) translateY(0); }
+.fanned-image-gallery__card:hover, .fanned-image-gallery__card:focus-visible { box-shadow: 0 28px 70px rgba(20,22,17,.22); }
+.fanned-image-gallery__card:focus-visible { outline: 2px solid #f6f6ef; outline-offset: 5px; }
+.fanned-image-gallery__image { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 720ms cubic-bezier(.16,1,.3,1), filter 350ms ease; }
+.fanned-image-gallery__card:hover .fanned-image-gallery__image, .fanned-image-gallery__card:focus-visible .fanned-image-gallery__image, .fanned-image-gallery__card.is-active .fanned-image-gallery__image { transform: scale(1.045); filter: saturate(1.08); }
+@keyframes fanned-image-gallery-rise {
   from { transform: translate(-50%, -50%) translateY(160px); }
   to { transform: translate(-50%, -50%) translateY(0); }
 }
-@keyframes social-fan-spread {
+@keyframes fanned-image-gallery-spread {
   from { transform: translate(0, 0) rotate(0) scale(1); }
   to { transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotation)) scale(var(--scale)); }
 }
 @media (max-width: 700px) {
-  .social-fan__deck { height: 60%; }
-  .social-fan__rise { width: 110px; }
-  .social-fan__card { --fan-x: var(--x-mobile); --fan-y: var(--y-mobile); --fan-rotation: var(--mobile-rotation); border-radius: 18px; }
+  .fanned-image-gallery__deck { height: 60%; }
+  .fanned-image-gallery__rise { width: 110px; }
+  .fanned-image-gallery__card { --fan-x: var(--x-mobile); --fan-y: var(--y-mobile); --fan-rotation: var(--mobile-rotation); border-radius: 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .social-fan__rise, .social-fan__card, .social-fan__image { animation: none !important; transition: none; }
+  .fanned-image-gallery__rise, .fanned-image-gallery__card, .fanned-image-gallery__image { animation: none !important; transition: none; }
 }
 `;
 
@@ -36,9 +36,9 @@ const images = [
   "/images/retro-cloud-stairway.webp",
   "/images/retro-cosmic-paths.webp",
   "/images/retro-media-orbit.webp",
-  "/images/retro-cosmic-paths.webp",
-  "/images/retro-cloud-stairway.webp",
-  "/images/retro-oval-horizon.webp",
+  "/images/retro-disc-signal.webp",
+  "/images/retro-stellar-ring.webp",
+  "/images/retro-window-reflection.webp",
 ];
 
 const base = [
@@ -61,7 +61,7 @@ function positionFor(index, active) {
   return { ...item, x: item.x + direction * push, rotation: item.rotation + direction * (3 / (distance + 1)), z: item.z };
 }
 
-export default function SocialFan({ cards = images }) {
+export default function FannedImageGallery({ cards = images }) {
   const rootRef = useRef(null);
   const hoverResetTimerRef = useRef(null);
   const [entered, setEntered] = useState(false);
@@ -143,16 +143,16 @@ export default function SocialFan({ cards = images }) {
   return (
     <section
       ref={rootRef}
-      className={`social-fan ${entered ? "is-entered" : ""} ${settled ? "is-settled" : ""}`}
+      className={`fanned-image-gallery ${entered ? "is-entered" : ""} ${settled ? "is-settled" : ""}`}
       onPointerLeave={handleGalleryLeave}
     >
       <style>{styles}</style>
-      <div className="social-fan__deck">
+      <div className="fanned-image-gallery__deck">
         {cards.slice(0, 7).map((image, index) => {
           const position = positionFor(index, active);
           return (
             <div
-              className="social-fan__rise"
+              className="fanned-image-gallery__rise"
               key={`${image}-${index}`}
               style={{
                 "--z": position.z,
@@ -160,7 +160,7 @@ export default function SocialFan({ cards = images }) {
               }}
             >
               <button
-                className={`social-fan__card ${active === index ? "is-active" : ""}`}
+                className={`fanned-image-gallery__card ${active === index ? "is-active" : ""}`}
                 type="button"
                 style={{
                   "--x-desktop": `${position.x}px`,
@@ -186,7 +186,7 @@ export default function SocialFan({ cards = images }) {
                 aria-pressed={selected === index}
                 aria-label={`Select gallery card ${index + 1}`}
               >
-                <img className="social-fan__image" src={image} alt="" />
+                <img className="fanned-image-gallery__image" src={image} alt="" />
               </button>
             </div>
           );

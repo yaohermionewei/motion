@@ -1,13 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   Code2,
   Copy,
   Download,
   Eye,
-  Menu,
   RotateCcw,
-  X,
 } from "lucide-react";
 import { categories, motionComponents } from "./data/registry";
 import ShuffleText from "./components/ShuffleText";
@@ -16,25 +14,40 @@ const defaultComponentId = motionComponents.find(
   (item) => item.category === categories[0]?.id,
 )?.id ?? motionComponents[0]?.id;
 
-function Sidebar({ selectedId, onSelect, mobileOpen, onClose, compactViewport }) {
+const legacyComponentIds = {
+  "social-fan": "fanned-image-gallery",
+};
+
+const mobileMenuCloseFallbackDuration = 320;
+
+function Sidebar({ selectedId, onSelect, menuPhase, onTransitionEnd, compactViewport }) {
+  const mobileOpen = menuPhase === "open";
+  const mobileClosing = menuPhase === "closing";
+
   return (
     <aside
-      className={`sidebar ${mobileOpen ? "is-open" : ""}`}
+      id="motion-index-sidebar"
+      className={`sidebar ${mobileOpen ? "is-open" : ""} ${mobileClosing ? "is-closing" : ""}`}
+      role={compactViewport ? "dialog" : undefined}
+      aria-label={compactViewport ? "动效组件目录" : undefined}
+      aria-modal={compactViewport && mobileOpen ? true : undefined}
       aria-hidden={compactViewport && !mobileOpen ? true : undefined}
       inert={compactViewport && !mobileOpen}
+      onTransitionEnd={onTransitionEnd}
     >
       <div className="sidebar__brand">
         <strong className="sidebar__wordmark" aria-label="Motion">MOOOTION</strong>
-        <button className="icon-button sidebar__close" onClick={onClose} aria-label="关闭目录" title="关闭目录">
-          <X size={18} />
-        </button>
       </div>
 
       <nav className="sidebar__nav" aria-label="动效组件目录">
-        {categories.map((category) => {
+        {categories.map((category, categoryIndex) => {
           const items = motionComponents.filter((item) => item.category === category.id);
           return (
-            <section className="nav-group" key={category.id}>
+            <section
+              className="nav-group"
+              key={category.id}
+              style={{ "--menu-delay": `${120 + categoryIndex * 28}ms` }}
+            >
               <div className="nav-group__heading">
                 <span>{category.title}</span>
               </div>
@@ -42,7 +55,7 @@ function Sidebar({ selectedId, onSelect, mobileOpen, onClose, compactViewport })
                 <button
                   key={item.id}
                   className={`nav-item ${selectedId === item.id ? "is-active" : ""}`}
-                  onClick={() => { onSelect(item.id); onClose(); }}
+                  onClick={() => onSelect(item.id)}
                 >
                   <span>
                     <strong>{item.title}</strong>
@@ -100,18 +113,23 @@ async function writeClipboard(text) {
 }
 
 export default function App() {
-  const initialId = window.location.hash.slice(1);
+  const hashId = window.location.hash.slice(1);
+  const initialId = legacyComponentIds[hashId] ?? hashId;
   const [selectedId, setSelectedId] = useState(
     motionComponents.some((item) => item.id === initialId) ? initialId : defaultComponentId,
   );
   const [view, setView] = useState("preview");
   const [replayKey, setReplayKey] = useState(0);
   const [copied, setCopied] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMenuPhase, setMobileMenuPhase] = useState("closed");
   const [compactViewport, setCompactViewport] = useState(() =>
     window.matchMedia("(max-width: 1200px)").matches,
   );
   const mobileMenuTriggerRef = useRef(null);
+  const mobileMenuCloseFallbackRef = useRef(null);
+  const mobileMenuSelectionFrameRef = useRef(null);
+  const mobileMenuOpen = mobileMenuPhase === "open";
+  const mobileMenuActive = mobileMenuPhase !== "closed";
 
   const selected = useMemo(
     () => motionComponents.find((item) => item.id === selectedId),
@@ -120,35 +138,51 @@ export default function App() {
 
   useEffect(() => {
     window.history.replaceState(null, "", `#${selectedId}`);
-    setView("preview");
-    setReplayKey((value) => value + 1);
   }, [selectedId]);
 
   useEffect(() => {
     const compactQuery = window.matchMedia("(max-width: 1200px)");
-    const syncScrollLock = () => {
+    const syncCompactViewport = () => {
       setCompactViewport(compactQuery.matches);
-      document.documentElement.classList.toggle(
-        "is-library-menu-open",
-        mobileOpen && compactQuery.matches,
-      );
-      if (!compactQuery.matches && mobileOpen) setMobileOpen(false);
-    };
-    const handleKeyDown = (event) => {
-      if (!mobileOpen || !compactQuery.matches) return;
+      if (compactQuery.matches) return;
 
+      window.clearTimeout(mobileMenuCloseFallbackRef.current);
+      setMobileMenuPhase("closed");
+    };
+
+    syncCompactViewport();
+    compactQuery.addEventListener("change", syncCompactViewport);
+    return () => {
+      compactQuery.removeEventListener("change", syncCompactViewport);
+      window.clearTimeout(mobileMenuCloseFallbackRef.current);
+      window.cancelAnimationFrame(mobileMenuSelectionFrameRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle(
+      "is-library-menu-open",
+      compactViewport && mobileMenuActive,
+    );
+    return () => document.documentElement.classList.remove("is-library-menu-open");
+  }, [compactViewport, mobileMenuActive]);
+
+  useEffect(() => {
+    if (!compactViewport || !mobileMenuOpen) return undefined;
+
+    const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        setMobileOpen(false);
-        window.requestAnimationFrame(() => mobileMenuTriggerRef.current?.focus());
+        closeMobileMenu();
         return;
       }
 
       if (event.key !== "Tab") return;
       const sidebar = document.querySelector(".sidebar");
-      const focusable = [...sidebar.querySelectorAll(
+      const sidebarFocusable = [...sidebar.querySelectorAll(
         'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
       )].filter((element) => !element.closest('[aria-hidden="true"]'));
+      const focusable = [...sidebarFocusable, mobileMenuTriggerRef.current].filter(Boolean);
       if (!focusable.length) return;
 
       const first = focusable[0];
@@ -162,22 +196,67 @@ export default function App() {
       }
     };
 
-    syncScrollLock();
-    if (mobileOpen && compactQuery.matches) {
-      window.requestAnimationFrame(() => document.querySelector(".sidebar__close")?.focus());
-    }
-    compactQuery.addEventListener("change", syncScrollLock);
     document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      compactQuery.removeEventListener("change", syncScrollLock);
-      document.removeEventListener("keydown", handleKeyDown);
-      document.documentElement.classList.remove("is-library-menu-open");
-    };
-  }, [mobileOpen]);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [compactViewport, mobileMenuOpen]);
+
+  function openMobileMenu() {
+    if (!compactViewport) return;
+
+    window.clearTimeout(mobileMenuCloseFallbackRef.current);
+    setMobileMenuPhase("open");
+  }
+
+  function completeMobileMenuClose() {
+    window.clearTimeout(mobileMenuCloseFallbackRef.current);
+    setMobileMenuPhase((phase) => (phase === "closing" ? "closed" : phase));
+  }
+
+  function handleMobileMenuTransitionEnd(event) {
+    if (event.target !== event.currentTarget || mobileMenuPhase !== "closing") return;
+    if (event.propertyName !== "clip-path" && event.propertyName !== "-webkit-clip-path") return;
+    completeMobileMenuClose();
+  }
 
   function closeMobileMenu() {
-    setMobileOpen(false);
+    if (!mobileMenuOpen) return;
+
+    window.clearTimeout(mobileMenuCloseFallbackRef.current);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setMobileMenuPhase(reducedMotion ? "closed" : "closing");
     window.requestAnimationFrame(() => mobileMenuTriggerRef.current?.focus());
+    if (reducedMotion) return;
+
+    mobileMenuCloseFallbackRef.current = window.setTimeout(
+      completeMobileMenuClose,
+      mobileMenuCloseFallbackDuration,
+    );
+  }
+
+  function handleComponentSelect(id) {
+    if (id === selectedId) {
+      if (mobileMenuOpen) closeMobileMenu();
+      return;
+    }
+
+    const selectComponent = () => {
+      setView("preview");
+      setSelectedId(id);
+    };
+
+    if (compactViewport && mobileMenuOpen) {
+      closeMobileMenu();
+      window.cancelAnimationFrame(mobileMenuSelectionFrameRef.current);
+      mobileMenuSelectionFrameRef.current = window.requestAnimationFrame(() => {
+        mobileMenuSelectionFrameRef.current = window.requestAnimationFrame(() => {
+          mobileMenuSelectionFrameRef.current = null;
+          startTransition(selectComponent);
+        });
+      });
+      return;
+    }
+
+    selectComponent();
   }
 
   async function copySource() {
@@ -192,30 +271,33 @@ export default function App() {
     <div className="app-shell">
       <Sidebar
         selectedId={selectedId}
-        onSelect={setSelectedId}
-        mobileOpen={mobileOpen}
-        onClose={closeMobileMenu}
+        onSelect={handleComponentSelect}
+        menuPhase={mobileMenuPhase}
+        onTransitionEnd={handleMobileMenuTransitionEnd}
         compactViewport={compactViewport}
       />
-      {mobileOpen && (
-        <button
-          className="sidebar-backdrop"
-          onClick={closeMobileMenu}
-          tabIndex={-1}
-          aria-hidden="true"
-        />
-      )}
+
+      <button
+        ref={mobileMenuTriggerRef}
+        className={`mobile-menu-toggle ${mobileMenuOpen ? "is-open" : ""}`}
+        type="button"
+        onClick={mobileMenuOpen ? closeMobileMenu : openMobileMenu}
+        aria-controls="motion-index-sidebar"
+        aria-expanded={mobileMenuOpen}
+        aria-label={mobileMenuOpen ? "关闭目录" : "打开目录"}
+        title={mobileMenuOpen ? "关闭目录" : "打开目录"}
+      >
+        <span className="mobile-menu-toggle__line mobile-menu-toggle__line--top" aria-hidden="true" />
+        <span className="mobile-menu-toggle__line mobile-menu-toggle__line--bottom" aria-hidden="true" />
+      </button>
 
       <main
         className="workspace"
-        aria-hidden={compactViewport && mobileOpen ? true : undefined}
-        inert={compactViewport && mobileOpen}
+        aria-hidden={compactViewport && mobileMenuActive ? true : undefined}
+        inert={compactViewport && mobileMenuActive}
       >
         <div className="component-page">
           <section className="component-head">
-            <button ref={mobileMenuTriggerRef} className="icon-button component-head__menu" onClick={() => setMobileOpen(true)} aria-label="打开目录" title="打开目录">
-              <Menu size={19} />
-            </button>
             <div className="component-head__copy">
               <div className="component-title-lockup">
                 <h1><span>{selected.title}</span></h1>
